@@ -1,8 +1,8 @@
 """Gitignore handling module."""
 
+import os
 from dataclasses import dataclass
-from pathlib import Path
-from typing import List
+from typing import Dict
 
 import pathspec
 
@@ -28,7 +28,7 @@ class GitignoreRule:
         Returns:
             bool: True if the path should be ignored
         """
-        relative_path = Path(path).relative_to(self.base_dir).as_posix()
+        relative_path = os.path.relpath(path, self.base_dir)
         return self.patterns.match_file(relative_path)
 
 
@@ -41,8 +41,8 @@ class GitignoreManager:
         Args:
             base_dir: Base directory to start searching for .gitignore files
         """
-        self.base_dir = Path(base_dir).resolve()
-        self.rules_cache: dict[str, GitignoreRule] = {}
+        self.base_dir = base_dir
+        self.rules_cache: Dict[str, GitignoreRule] = {}
         self._load_all_gitignores()
 
     def _parse_gitignore(self, gitignore_path: str) -> pathspec.PathSpec:
@@ -54,7 +54,7 @@ class GitignoreManager:
         Returns:
             PathSpec: Compiled gitignore patterns
         """
-        patterns: List[str] = []
+        patterns = []
         try:
             with open(gitignore_path, "r", encoding="utf-8") as f:
                 for line in f:
@@ -68,10 +68,11 @@ class GitignoreManager:
 
     def _load_all_gitignores(self) -> None:
         """Load all .gitignore files from base directory and subdirectories."""
-        for path in Path(self.base_dir).rglob(".gitignore"):
-            dir_path = str(path.parent)
-            patterns = self._parse_gitignore(str(path))
-            self.rules_cache[dir_path] = GitignoreRule(patterns, dir_path)
+        for root, dirs, files in os.walk(self.base_dir):
+            if ".gitignore" in files:
+                gitignore_path = os.path.join(root, ".gitignore")
+                patterns = self._parse_gitignore(gitignore_path)
+                self.rules_cache[root] = GitignoreRule(patterns, root)
 
     def is_ignored(self, path: str) -> bool:
         """Check if a path should be ignored by any .gitignore rule.
@@ -82,14 +83,10 @@ class GitignoreManager:
         Returns:
             bool: True if the path should be ignored
         """
-        path = Path(path).resolve()
-        current_dir = path.parent
-
-        # Check each parent directory for .gitignore rules
-        while current_dir.as_posix() >= self.base_dir.as_posix():
-            if str(current_dir) in self.rules_cache:
-                if self.rules_cache[str(current_dir)].is_ignored(str(path)):
+        current_dir = os.path.dirname(path)
+        while current_dir >= self.base_dir:
+            if current_dir in self.rules_cache:
+                if self.rules_cache[current_dir].is_ignored(path):
                     return True
-            current_dir = current_dir.parent
-
+            current_dir = os.path.dirname(current_dir)
         return False
