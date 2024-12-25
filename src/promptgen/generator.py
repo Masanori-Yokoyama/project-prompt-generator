@@ -4,4 +4,5 @@
 
 class PromptGenerator:
     """Main prompt generator class."""
+
     pass

@@ -1,9 +1,8 @@
-# src/promptgen/cli.py
-"""Command line interface module."""
+"""Execute the command line interface for the promptgen package."""
 
 
 def main():
-    """Main entry point for the command line interface."""
+    """Execute the main CLI function."""
     pass
 
 
