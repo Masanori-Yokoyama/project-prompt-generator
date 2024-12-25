@@ -1,5 +1,4 @@
-# src/promptgen/__init__.py
-"""Project Prompt Generator
+"""Project Prompt Generator.
 
 A tool to generate AI prompts from project files.
 """

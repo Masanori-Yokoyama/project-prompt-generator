@@ -1,5 +1,5 @@
-# setup.py
-from setuptools import setup, find_packages
+"""Setup configuration for the promptgen package."""
+from setuptools import find_packages, setup
 
 setup(
     name="promptgen",
@@ -12,15 +12,17 @@ setup(
     extras_require={
         "dev": [
             "pytest>=7.0.0",
-            "black>=22.0.0",
-            "flake8>=4.0.0",
-            "isort>=5.0.0",
-            "pre-commit>=2.0.0",
+            "pytest-cov>=4.0.0",
+            "black>=23.7.0",
+            "flake8>=6.1.0",
+            "flake8-docstrings>=1.7.0",
+            "isort>=5.12.0",
+            "pre-commit>=3.3.3",
         ],
     },
     entry_points={
-        'console_scripts': [
-            'promptgen=promptgen.cli:main',
+        "console_scripts": [
+            "promptgen=promptgen.cli:main",
         ],
     },
     author="YOUR_NAME",
