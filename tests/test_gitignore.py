@@ -85,3 +85,29 @@ def test_gitignore_manager_with_nested_rules():
         assert manager.is_ignored(str(level1_dir / "test.log"))
         assert manager.is_ignored(str(level2_dir / "test.tmp"))
         assert not manager.is_ignored(str(base_dir / "test.txt"))
+
+
+def test_gitignore_manager_file_error(capsys):
+    """Test GitignoreManager file reading error handling."""
+    with TemporaryDirectory() as temp_dir:
+        base_dir = Path(temp_dir)
+
+        # 読み取り権限のない.gitignoreファイルを作成
+        gitignore = base_dir / ".gitignore"
+        gitignore.write_text("*.log")
+        gitignore.chmod(0o000)  # 読み取り権限を削除
+
+        # GitignoreManagerの初期化（この時点で_parse_gitignoreが呼ばれる）
+        manager = GitignoreManager(str(base_dir))
+
+        # エラーメッセージを確認
+        captured = capsys.readouterr()
+        assert "Warning: Error reading" in captured.out
+        assert str(gitignore) in captured.out
+
+        # managerが正しく初期化されていることを確認
+        test_file = base_dir / "test.log"
+        assert not manager.is_ignored(str(test_file))  # エラーのため.gitignoreルールは適用されない
+
+        # 後処理：ファイルの権限を戻す
+        gitignore.chmod(0o644)
