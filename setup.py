@@ -35,7 +35,7 @@ setup(
     description="A tool to generate AI prompts from project files",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/YOUR_USERNAME/project-prompt-generator",
+    url="https://github.com/Masanori-Yokoyama/project-prompt-generator",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
