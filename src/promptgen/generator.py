@@ -18,7 +18,16 @@ class PromptGenerator:
             base_dir: Base directory to search.
             file_patterns: List of file patterns to include.
             exclude_dirs: List of directories to exclude.
+
+        Raises:
+            NotADirectoryError: If base_dir does not exist or is not a directory.
+            ValueError: If file_patterns is empty.
         """
+        if not os.path.isdir(base_dir):
+            raise NotADirectoryError(f"Directory not found: {base_dir}")
+        if not file_patterns:
+            raise ValueError("At least one file pattern must be specified")
+
         self.base_dir = os.path.abspath(base_dir)
         self.file_patterns = file_patterns
         self.exclude_dirs = exclude_dirs or []
