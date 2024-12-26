@@ -1,71 +1,81 @@
 # Project Prompt Generator
 
-A Python tool that generates AI prompts by analyzing project files. It respects .gitignore rules and allows custom directory exclusions.
+プロジェクトファイルを解析してAIプロンプトを生成するPythonツールです。.gitignoreルールを尊重し、カスタムディレクトリの除外にも対応しています。
 
-## Features
+## 特徴
 
-- Scans project directories for specific file types
-- Respects .gitignore rules
-- Allows custom directory exclusions
-- Supports multiple file patterns
-- Generates formatted prompts for AI interactions
+- 🔍 特定のファイルタイプに対応したプロジェクトディレクトリのスキャン
+- 📝 .gitignoreルールの適用
+- 🚫 カスタムディレクトリの除外機能
+- 🎯 複数のファイルパターンに対応
+- 🔄 AI対話用の整形されたプロンプト生成
 
-## Installation
+## インストール
 
-### From GitHub
+### GitHubからのインストール
 ```bash
-pip install git+https://github.com/YOUR_USERNAME/project-prompt-generator.git
+pip install git+https://github.com/Masanori-Yokoyama/project-prompt-generator.git
 ```
 
-### For Development
+### 開発用インストール
 ```bash
-git clone https://github.com/YOUR_USERNAME/project-prompt-generator.git
+git clone https://github.com/Masanori-Yokoyama/project-prompt-generator.git
 cd project-prompt-generator
-pip install -e .
+pip install -e ".[dev]"
 ```
 
-## Usage
+## 使用方法
 
-### Command Line
+### コマンドラインインターフェース
 ```bash
-promptgen --dir /path/to/project --patterns .py .js --output output.txt
+# 基本的な使用方法
+promptgen --dir /path/to/project
+
+# ファイルパターンの指定
+promptgen --dir . --patterns .py .js .json
+
+# ディレクトリの除外
+promptgen --dir . --exclude-dirs node_modules dist
+
+# 出力をファイルに保存
+promptgen --dir . --output prompt.txt
+
+# 詳細出力の有効化
+promptgen --dir . --verbose
 ```
 
 ### Python API
 ```python
 from promptgen import PromptGenerator
 
+# ジェネレーターの初期化
 generator = PromptGenerator(
     base_dir="./my_project",
     file_patterns=[".py", ".js"],
     exclude_dirs=["node_modules"]
 )
-files_content = generator.collect_files()
-prompt = generator.generate_prompt(files_content)
+
+# ファイルの収集とプロンプト生成
+files = generator.collect_files()
+prompt = generator.generate_prompt(files)
 print(prompt)
 ```
 
-## Options
+## 設定
 
-- `--dir`: Base directory to search (default: current directory)
-- `--patterns`: File patterns to include (extensions or complete filenames)
-- `--output`: Output file path (optional)
-- `--exclude-dirs`: Additional directories to exclude
-- `--verbose`: Enable verbose output
-
-## Default File Patterns
-
+### デフォルトのファイルパターン
+以下のファイルパターンがデフォルトで含まれています：
 - Python: `.py`
 - JavaScript: `.js`
 - TypeScript: `.ts`
 - JSON: `.json`
 - YAML: `.yml`, `.yaml`
 - HTML: `.html`
-- Configuration: `.conf`, `.toml`
+- 設定ファイル: `.conf`, `.toml`
 - Markdown: `.md`
-- Stylesheets: `.css`, `.scss`
-- Shell Scripts: `.sh`
-- Common Project Files:
+- スタイルシート: `.css`, `.scss`
+- シェルスクリプト: `.sh`
+- 一般的なプロジェクトファイル:
   - `Dockerfile`
   - `docker-compose.yml`
   - `docker-compose.yaml`
@@ -77,56 +87,64 @@ print(prompt)
   - `tsconfig.json`
   - `.dockerignore`
 
-## Documentation
+### コマンドラインオプション
+| オプション | 説明 | デフォルト値 |
+|------------|------|--------------|
+| `--dir` | 検索を開始するディレクトリ | カレントディレクトリ |
+| `--patterns` | 含めるファイルパターン | [デフォルトパターン] |
+| `--output` | 出力ファイルパス | なし（標準出力） |
+| `--exclude-dirs` | 除外するディレクトリ | なし |
+| `--verbose` | 詳細出力の有効化 | False |
 
-- [Requirements Specification](docs/requirements.md)
-- [Development Steps](docs/development_steps.md)
+## 開発
 
-## Development
-
-This project uses:
-- `black` for code formatting
-- `flake8` for code linting
-- `isort` for import sorting
-- `pytest` for testing
-
-### Setting up development environment
-
-1. Clone the repository
+### 開発環境のセットアップ
 ```bash
-git clone https://github.com/YOUR_USERNAME/project-prompt-generator.git
+# リポジトリのクローン
+git clone https://github.com/Masanori-Yokoyama/project-prompt-generator.git
 cd project-prompt-generator
-```
 
-2. Install development dependencies
-```bash
+# 開発用依存関係のインストール
 pip install -e ".[dev]"
-```
 
-3. Install pre-commit hooks
-```bash
+# pre-commit hooksのインストール
 pre-commit install
 ```
 
-### Running Tests
+### テストの実行
 ```bash
+# 全テストの実行
 pytest
+
+# カバレッジ付きでテストを実行
+pytest --cov=promptgen
+
+# 特定のテストファイルの実行
+pytest tests/test_generator.py
 ```
 
-## Contributing
+### コード品質
+このプロジェクトでは以下のツールを使用しています：
+- `black`: コードフォーマット
+- `flake8`: コードリント
+- `isort`: インポートの整理
+- `mypy`: 型チェック
+- `pre-commit`: Gitフック
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+### 型ヒント
+このプロジェクトは完全に型付けされており、`py.typed`マーカーファイルを含んでいます。IDEとの統合はそのまま機能します。
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## 貢献
 
-## License
+貢献は歓迎します！プルリクエストを気軽に提出してください。
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+1. リポジトリをフォーク
+2. 機能ブランチを作成（`git checkout -b feature/amazing-feature`）
+3. テストを実行し、パスすることを確認
+4. 変更をコミット（`git commit -m '素晴らしい機能を追加'`）
+5. ブランチにプッシュ（`git push origin feature/amazing-feature`）
+6. プルリクエストを作成
 
-## Project Status
+## ライセンス
 
-This project is under active development. See the [project board](https://github.com/YOUR_USERNAME/project-prompt-generator/projects/1) for current status.
+このプロジェクトはMITライセンスの下で公開されています - 詳細は[LICENSE](LICENSE)ファイルを参照してください。
