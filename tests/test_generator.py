@@ -160,3 +160,46 @@ def test_prompt_generator_empty_result():
         # Test prompt generation with empty files
         prompt = generator.generate_prompt(files)
         assert prompt == "対象となるファイルが見つかりませんでした。"
+
+
+def test_prompt_generator_exact_filename_match():
+    """Test PromptGenerator with exact filename matching."""
+    with TemporaryDirectory() as temp_dir:
+        base_dir = Path(temp_dir)
+
+        # 完全なファイル名でマッチするファイルを作成
+        dockerfile = base_dir / "Dockerfile"
+        dockerfile.write_text("FROM python:3.8")
+
+        # 完全なファイル名でマッチするパターンを指定
+        generator = PromptGenerator(
+            base_dir=str(base_dir), file_patterns=["Dockerfile"]  # 完全なファイル名を指定
+        )
+
+        files = generator.collect_files()
+        assert len(files) == 1
+        assert str(dockerfile) in files
+
+
+def test_prompt_generator_file_read_error(capsys):
+    """Test PromptGenerator file reading error handling."""
+    with TemporaryDirectory() as temp_dir:
+        base_dir = Path(temp_dir)
+
+        # 読み取り権限のないファイルを作成
+        test_py = base_dir / "test.py"
+        test_py.write_text("print('test')")
+        test_py.chmod(0o000)  # 読み取り権限を削除
+
+        generator = PromptGenerator(base_dir=str(base_dir), file_patterns=[".py"])
+
+        files = generator.collect_files()
+        assert len(files) == 0
+
+        # エラーメッセージを確認
+        captured = capsys.readouterr()
+        assert "Error reading file" in captured.out
+        assert str(test_py) in captured.out
+
+        # 後処理：ファイルの権限を戻す
+        test_py.chmod(0o644)
