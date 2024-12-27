@@ -1,7 +1,7 @@
 """File collection and prompt generation module."""
 
 import os
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from promptgen.gitignore import GitignoreManager
 
@@ -10,7 +10,10 @@ class PromptGenerator:
     """Generator for creating AI prompts from project files."""
 
     def __init__(
-        self, base_dir: str, file_patterns: List[str], exclude_dirs: List[str] = None
+        self,
+        base_dir: str,
+        file_patterns: List[str],
+        exclude_dirs: Optional[List[str]] = None,
     ):
         """Initialize the prompt generator.
 
